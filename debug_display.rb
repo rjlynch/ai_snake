@@ -1,7 +1,7 @@
 class DebugDisplay
-  def show(game:, agent:, itteration:)
+  def show(game:, agent:)
     system "clear"
-    puts "itteration #{itteration}"
+    puts "itteration #{game.number_of_rounds}"
     puts "Score #{game.score}"
 
     game.board.cells.each do |row|

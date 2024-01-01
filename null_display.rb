@@ -1,5 +1,5 @@
 class NullDisplay
-  def show(game:, agent:, itteration: nil)
+  def show(game:, agent:)
   end
 
   def game_over(score)

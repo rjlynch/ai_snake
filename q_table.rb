@@ -8,7 +8,16 @@ class QTable
 
     @table = {}
 
-    vector = InputVector.new(board: Board.new(Game.new), move: :na)
+    vector = InputVector.new(
+      board: Board.new(
+        Game.new(
+          agent: :null,
+          display: :null,
+          number_of_rounds: :null,
+        ),
+      ),
+      move: :na,
+    )
 
     num_states = vector.to_a.size
     possible_states = 2 ** num_states

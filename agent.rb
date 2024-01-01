@@ -9,8 +9,8 @@ class Agent
     @q_table = q_table
   end
 
-  def update_state(game, itteration)
-    @itteration = itteration
+  def update_state(game)
+    @itteration = game.number_of_rounds
 
     if @first_move
       @first_move = false
@@ -50,9 +50,9 @@ class Agent
     move
   end
 
-  def game_over(game, itteration)
+  def game_over(game)
     @number_of_moves += 1
-    update_state(game, itteration)
+    update_state(game)
   end
 
   def human?

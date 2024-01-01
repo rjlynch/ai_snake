@@ -1,5 +1,5 @@
 class Game
-  attr_reader :score, :game_over, :snake, :food, :board
+  attr_reader :score, :game_over, :snake, :food, :board, :number_of_rounds
 
   DIRECTIONS = {
     up: [-1, 0],
@@ -8,24 +8,28 @@ class Game
     left: [0, -1],
   }
 
-  def initialize()
+  def initialize(agent:, display:, number_of_rounds:)
     @snake = [[5, 5]]
     @direction = [0, 1] # Initially moving right
     @food = [rand(10), rand(10)]
     @score = 0
     @game_over = false
+    @agent = agent
+    @display = display
+    @number_of_rounds = number_of_rounds
 
     update_game_state
   end
 
-  def play(display_callback:, move_callback:, game_over_callback:)
+  def play
     while !@game_over
-      display_callback.call(self)
-      player_move = move_callback.call(self)
+      @display.show(game: self, agent: @agent)
+      player_move = @agent.update_state(self)
       @direction = DIRECTIONS.fetch(player_move)
       update_game_state
     end
-    game_over_callback.call(self)
+    @agent.game_over(self)
+    @display.game_over(self)
   end
 
   def game_over?

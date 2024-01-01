@@ -1,5 +1,7 @@
 class SimpleDisplay
-  def show(game:, agent:, itteration: nil)
+  def show(game:, agent:)
+    itteration = game.number_of_rounds
+
     if @itteration_was != itteration
       #system "clear"
       puts "itteration #{itteration}"

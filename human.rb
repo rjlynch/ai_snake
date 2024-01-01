@@ -1,5 +1,5 @@
 class Human
-  def update_state(game, itteration)
+  def update_state(game)
     get_input
   end
 

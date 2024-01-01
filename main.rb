@@ -16,21 +16,10 @@ require_relative "debug_display"
 
 def play
   display = DebugDisplay.new
-  game = Game.new
   agent = Human.new
+  game = Game.new(agent: agent, display: display, number_of_rounds: 0)
 
-  game.play(
-    display_callback: ->(game) do
-      display.show(game: game, agent: agent, itteration: 0)
-    end,
-    move_callback: ->(game) do
-      agent.update_state(game, 0)
-    end,
-    game_over_callback: ->(game) do
-      agent.game_over(game)
-      display.game_over(game)
-    end
-  )
+  game.play
 end
 
 def train_torch
@@ -57,26 +46,13 @@ def train(agent)
       display = null_display
     end
 
-    game = Game.new
+    game = Game.new(agent: agent, display: display, number_of_rounds: itteration)
 
     begin
       Timeout::timeout(60) do
-        game.play(
-          display_callback: ->(game) do
-            display.show(game: game, agent: agent, itteration: itteration)
-          end,
-          move_callback: ->(game) do
-            agent.update_state(game, itteration)
-          end,
-          game_over_callback: ->(game) do
-            agent.game_over(game, itteration)
-            display.game_over(game)
-          end
-        )
+        game.play
       end
     rescue Timeout::Error
-      # agent.game_over(game)
-      # display.game_over(@score)
     end
   end
 end
