@@ -4,7 +4,6 @@ class Agent
 
   def initialize(q_table)
     @first_move = true
-    @number_of_moves = 0
     @total_reward = 0
     @q_table = q_table
   end
@@ -51,7 +50,6 @@ class Agent
   end
 
   def game_over(game)
-    @number_of_moves += 1
     update_state(game)
   end
 
