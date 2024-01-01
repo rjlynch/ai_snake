@@ -26,7 +26,7 @@
   solution, though it learns to avoid danger quite quickly. The neural net
   deep q table can play the game pretty well after 4000 games.
 
-  The action kicks of in the file `main.rb` so best to review that first.
+  The action kicks off in the file `main.rb` so best to review that first.
   Hyper parameters can be tweaked in `hyper_parameters.rb`
 
   The agent uses a q learning based approach to learn the game, backed by
