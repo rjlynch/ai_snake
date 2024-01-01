@@ -9,7 +9,7 @@ class HyperParameters
   MINIMUM_EPSILON = 5
 
   EPSILON_CALLBACK = ->(number_of_games) do
-    return 0 if number_of_games > 4000
+    return 0 if number_of_games > 5000
 
     [(INTIAL_EPSILON - number_of_games), MINIMUM_EPSILON].max
   end
@@ -18,7 +18,7 @@ class HyperParameters
   REWARD_GAME_OVER = -1
   REWARD_MOVE = -0.1
 
-  NUM_GAMES = 5_000
-  SHOW_DEBUG_DISPLAY = -> (itteration) { itteration > 4000 }
+  NUM_GAMES = 6_000
+  SHOW_DEBUG_DISPLAY = -> (itteration) { itteration > 5000 }
   SHOW_SIMPLE_DISPLAY = -> (itteration) { itteration % 10 == 0 }
 end
