@@ -1,5 +1,12 @@
 class TorchQTable < Torch::NN::Module
-  class Memory < Struct.new(:board, :move, :reward, keyword_init: true); end
+  class Memory < Struct.new(
+    :board,
+    :move,
+    :reward,
+    :outcome_board,
+    keyword_init: true
+  )
+  end
 
   def initialize
     super()
@@ -21,14 +28,19 @@ class TorchQTable < Torch::NN::Module
     forward(Torch.tensor(vector.to_a, dtype: :float)).item
   end
 
-  def learn(board:, move:, reward:)
+  def learn(board:, move:, reward:, outcome_board:)
     if memory_full?
       batch = @memories.shuffle!.shift(HyperParameters::BATCH_SIZE)
 
       train(batch)
     end
 
-    @memories << Memory.new(board: board, move: move, reward: reward)
+    @memories << Memory.new(
+      board: board,
+      move: move,
+      reward: reward,
+      outcome_board: outcome_board,
+    )
   end
 
   private
@@ -38,10 +50,13 @@ class TorchQTable < Torch::NN::Module
   end
 
   def train(batch)
-    optimizer = Torch::Optim::Adam.new(
-      parameters,
-      lr: HyperParameters::LEARNING_RATE.call(@training_runs),
-    )
+    learning_rate = HyperParameters::LEARNING_RATE.call(@training_runs)
+
+    foregtting_rate = (1 - learning_rate)
+
+    discount_rate = HyperParameters::DISCOUNT
+
+    optimizer = Torch::Optim::Adam.new(parameters, lr: learning_rate)
 
     # Train the model
     HyperParameters::NUM_EPOCHS.times do |epoch|
@@ -49,12 +64,19 @@ class TorchQTable < Torch::NN::Module
       y = []
 
       batch.each do |memory|
-        max_predicted_q_value = Agent::ACTIONS.map do |action|
-          reward_for(board: memory.board, move: action)
+        observed_reward = memory.reward
+
+        estimate_of_optimal_future_reward = Agent::ACTIONS.map do |action|
+          reward_for(board: memory.outcome_board, move: action)
         end.max
 
+        total_reward = \
+          observed_reward + (discount_rate * estimate_of_optimal_future_reward)
+
+        learned_reward = reward_for(board: memory.board, move: memory.move)
+
         updated_q_value = \
-          memory.reward + HyperParameters::DISCOUNT * max_predicted_q_value
+          (foregtting_rate * learned_reward) + (learning_rate * total_reward)
 
         x.push(InputVector.new(board: memory.board, move: memory.move).to_a)
 

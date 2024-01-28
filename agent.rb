@@ -30,6 +30,7 @@ class Agent
         board: @previous_board,
         move: @previous_move,
         reward: reward,
+        outcome_board: game.board,
       )
     end
 
@@ -102,7 +103,12 @@ class Agent
     end.max_by(&:last).first
   end
 
-  def learn(board:, move:, reward:)
-    @q_table.learn(board: board, move: move, reward: reward)
+  def learn(board:, move:, reward:, outcome_board:)
+    @q_table.learn(
+      board: board,
+      move: move,
+      reward: reward,
+      outcome_board: outcome_board,
+    )
   end
 end

@@ -1,5 +1,11 @@
 class QTable
-  class Memory < Struct.new(:board, :move, :reward, keyword_init: true)
+  class Memory < Struct.new(
+    :board,
+    :move,
+    :reward,
+    :outcome_board,
+    keyword_init: true,
+  )
   end
 
   def initialize
@@ -39,16 +45,26 @@ class QTable
     @table[vector.to_a]
   end
 
-  def learn(board:, move:, reward:)
+  def learn(board:, move:, reward:, outcome_board:)
     if memory_full?
       batch = @memories.shift(BATCH_SIZE)
 
       batch.each do |memory|
-        train(board: memory.board, move: memory.move, reward: memory.reward)
+        train(
+          board: memory.board,
+          move: memory.move,
+          reward: memory.reward,
+          outcome_board: memory.outcome_board,
+        )
       end
     end
 
-    @memories << Memory.new(board: board, move: move, reward: reward)
+    @memories << Memory.new(
+      board: board,
+      move: move,
+      reward: reward,
+      outcome_board: outcome_board,
+    )
   end
 
   private
@@ -57,18 +73,29 @@ class QTable
     @memories.size >= MEMORY_SIZE
   end
 
-  def train(board:, move:, reward:)
-    vector = InputVector.new(board: board, move: move)
+  def train(board:, move:, reward:, outcome_board:)
+    learning_rate = @learning_rate
 
-    current_q_value = @table[vector.to_a]
+    discount_rate = @discount_factor
 
-    max_future_q_value = Agent::ACTIONS.map do |action|
-      possible_next_state = InputVector.new(board: board, move: action)
-      @table[possible_next_state.to_a]
+    foregtting_rate = (1 - learning_rate)
+
+    observed_reward = reward
+
+    estimate_of_optimal_future_reward = Agent::ACTIONS.map do |action|
+      reward_for(board: outcome_board, move: action)
     end.max
 
-    new_q_value = current_q_value + @learning_rate * (reward + @discount_factor * max_future_q_value - current_q_value)
+    total_reward = \
+      observed_reward + (discount_rate * estimate_of_optimal_future_reward)
 
-    @table[vector.to_a] = new_q_value
+    learned_reward = reward_for(board: board, move: move)
+
+    updated_q_value = \
+      (foregtting_rate * learned_reward) + (learning_rate * total_reward)
+
+    vector = InputVector.new(board: board, move: move)
+
+    @table[vector.to_a] = updated_q_value
   end
 end
