@@ -43,6 +43,9 @@
   sort of thing.
 
   ## Hash backed Q table playing snake
+  ![q_table](https://github.com/rjlynch/ai_snake/assets/9936028/eb32dd25-99d0-4843-ab3e-f1602433864d)
+
 
   ## Deep Q table playing snake
+  ![deep_q_table](https://github.com/rjlynch/ai_snake/assets/9936028/24feddce-9885-4004-ae3c-1563cb699e43)
 
